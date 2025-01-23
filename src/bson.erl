@@ -1,7 +1,7 @@
 %@doc A BSON document is a JSON-like object with a standard binary encoding defined at bsonspec.org. This implements version 1.0 of that spec.
 -module (bson).
 
--export_type ([maybe/1]).
+-export_type ([maybe_tuple/1]).
 -export_type ([document/0, label/0, value/0]).
 -export_type ([arr/0]).
 -export_type ([bin/0, bfunction/0, uuid/0, md5/0, userdefined/0]).
@@ -17,7 +17,7 @@
 -export ([timenow/0, ms_precision/1, secs_to_unixtime/1, unixtime_to_secs/1]).
 -export ([objectid/3, objectid_time/1]).
 
--type maybe(A) :: {A} | {}.
+-type maybe_tuple(A) :: {A} | {}.
 
 % Document %
 
@@ -62,7 +62,7 @@ document (Fields) -> list_to_tuple (flatten (Fields)).
 flatten ([]) -> [];
 flatten ([{Label, Value} | Fields]) -> [Label, Value | flatten (Fields)].
 
--spec lookup (label(), document()) -> maybe (value()).
+-spec lookup (label(), document()) -> maybe_tuple (value()).
 %@doc Value of field in document if there
 lookup (Label, Doc) when is_atom(Label) ->
     lookup(atom_to_binary(Label, utf8), Doc);
@@ -96,13 +96,13 @@ lookup (Label, Doc, Default) ->
 				{} -> Default end
 	end.
 
--spec find (label(), document()) -> maybe (integer()).
+-spec find (label(), document()) -> maybe_tuple (integer()).
 %@doc Index of field in document if there
 find (Label, Doc) when is_atom(Label) ->
     find(atom_to_binary(Label, utf8), Doc);
 find (Label, Doc) -> findN (Label, Doc, 0, tuple_size (Doc) div 2).
 
--spec findN (label(), document(), integer(), integer()) -> maybe (integer()).
+-spec findN (label(), document(), integer(), integer()) -> maybe_tuple (integer()).
 %@doc Find field index in document from first index (inclusive) to second index (exclusive).
 findN (Label, Doc, Low, High) when is_atom(Label) ->
     findN(atom_to_binary(Label, utf8), Doc, Low, High);
